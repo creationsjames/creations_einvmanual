@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>創盛 Mr.P 電子發票操作手冊 | 營業人版</title>
+    <style>
+        :root {
+            /* 創盛品牌色系 - 調整為沈穩護眼風格 */
+            --sidebar-bg: #1a2332; /* 深藍灰，減少螢幕發光面積 */
+            --sidebar-text: #a4b0be;
+            --sidebar-active: #007bff; /* 創盛亮藍，僅用於強調 */
+            --sidebar-hover: #2c3e50;
+            
+            --main-bg: #f4f6f8; /* 護眼淡灰底色 */
+            --card-bg: #ffffff;
+            --text-main: #2f3542;
+            --text-secondary: #57606f;
+            --border-color: #dfe4ea;
+            
+            --btn-primary: #0056b3;
+            --btn-hover: #004494;
+
+            --sidebar-width: 260px;
+            --header-height: 60px;
+        }
+
+        * {
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--main-bg);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden; /* 防止整個頁面捲動 */
+        }
+
+        /* --- Sidebar (Left) --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #10151d;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .logo-area {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            background-color: rgba(0,0,0,0.2);
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #fff;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .logo-icon {
+            color: var(--sidebar-active);
+            margin-right: 10px;
+            font-size: 1.4rem;
+        }
+
+        .menu-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .menu-category {
+            padding: 15px 25px 8px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #57606f;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-item {
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover {
+            background-color: var(--sidebar-hover);
+            color: #fff;
+        }
+
+        .menu-item.active {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #fff;
+            border-left-color: var(--sidebar-active);
+        }
+
+        .menu-item i {
+            width: 20px;
+            margin-right: 10px;
+            text-align: center;
+        }
+
+        .user-profile {
+            padding: 15px 20px;
+            background-color: rgba(0,0,0,0.1);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background-color: var(--sidebar-active);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* --- Main Content (Right) --- */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-header {
+            height: var(--header-height);
+            background-color: #fff;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            justify-content: space-between;
+        }
+
+        .breadcrumbs {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .current-page-title {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto; /* 只有內容區域捲動 */
+            padding: 30px;
+            scroll-behavior: smooth;
+        }
+
+        /* --- Pages & Cards --- */
+        .page-view {
+            display: none; /* 預設隱藏所有頁面 */
+            max-width: 1000px;
+            margin: 0 auto;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page-view.active {
+            display: block; /* 顯示當前頁面 */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            color: var(--btn-primary);
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            color: #2c3e50;
+            margin-top: 25px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        h3::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 18px;
+            background-color: var(--sidebar-active);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+
+        /* --- Custom Elements --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .quick-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .quick-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-color: var(--sidebar-active);
+        }
+
+        .qc-icon {
+            width: 40px;
+            height: 40px;
+            background: #eef6ff;
+            color: var(--sidebar-active);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .qc-content h4 {
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+        }
+
+        .qc-content p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .alert-box {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            display: flex;
+            gap: 15px;
+            line-height: 1.5;
+        }
+
+        .alert-warning {
+            background-color: #fff8e1;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .alert-info {
+            background-color: #e3f2fd;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .step-list {
+            padding-left: 20px;
+        }
+        
+        .step-list li {
+            margin-bottom: 10px;
+        }
+
+        .code-tag {
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #c7254e;
+        }
+
+        /* Image Placeholder Style */
+        .img-placeholder {
+            width: 100%;
+            height: 240px;
+            background-color: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #adb5bd;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .img-placeholder img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: none; /* JS will toggle this */
+        }
+        
+        .img-placeholder.has-image img {
+            display: block;
+        }
+
+        .img-placeholder.has-image .placeholder-text {
+            display: none;
+        }
+
+        .placeholder-text {
+            text-align: center;
+        }
+
+        .caption {
+            font-size: 0.85rem;
+            color: #6c757d;
+            text-align: center;
+            margin-top: -15px;
+            margin-bottom: 25px;
+            display: block;
+        }
+
+        /* Helper for mobile */
+        .mobile-menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                z-index: 1000;
+                height: 100%;
+            }
+            .sidebar.open {
+                left: 0;
+            }
+            .mobile-menu-btn {
+                display: block;
+            }
+            .content-area {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 左側導航欄 -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo-area">
+            <span class="logo-icon">❖</span> The Creations
+        </div>
+
+        <div class="menu-container">
+            <!-- 儀表板 -->
+            <div class="menu-item active" onclick="showPage('dashboard', this)">
+                <i>📊</i> 系統儀表板
+            </div>
+
+            <!-- 重要須知 -->
+            <div class="menu-category">新手必讀</div>
+            <div class="menu-item" onclick="showPage('important', this)">
+                <i>⚠️</i> 重要時程與須知
+            </div>
+
+            <!-- 前置作業 -->
+            <div class="menu-category">雙月例行 (前置)</div>
+            <div class="menu-item" onclick="showPage('platform-get', this)">
+                <i>🌐</i> 步驟1：平台取號
+            </div>
+            <div class="menu-item" onclick="showPage('system-import', this)">
+                <i>💻</i> 步驟2：系統匯入
+            </div>
+
+            <!-- 日常作業 -->
+            <div class="menu-category">櫃檯日常</div>
+            <div class="menu-item" onclick="showPage('daily-issue', this)">
+                <i>🧾</i> 銷貨發票開立
+            </div>
+            <div class="menu-item" onclick="showPage('daily-void', this)">
+                <i>❌</i> 作廢與重開
+            </div>
+            <div class="menu-item" onclick="showPage('daily-reprint', this)">
+                <i>🖨️</i> 補印收據/發票
+            </div>
+
+            <!-- 退貨折讓 -->
+            <div class="menu-category">例外處理</div>
+            <div class="menu-item" onclick="showPage('return-ops', this)">
+                <i>↩️</i> 退換貨作業
+            </div>
+            <div class="menu-item" onclick="showPage('allowance-ops', this)">
+                <i>📄</i> 折讓單作業
+            </div>
+
+            <!-- 申報查核 -->
+            <div class="menu-category">會計申報</div>
+            <div class="menu-item" onclick="showPage('upload-daily', this)">
+                <i>☁️</i> 每日上傳 (INV02)
+            </div>
+            <div class="menu-item" onclick="showPage('check-data', this)">
+                <i>🔍</i> 上傳發票核對
+            </div>
+            <div class="menu-item" onclick="showPage('upload-blank', this)">
+                <i>🎫</i> 空白發票上傳
+            </div>
+        </div>
+
+        <div class="user-profile">
+            <div class="user-avatar">PM</div>
+            <div>
+                <div style="font-weight: 600;">Mr.P 支援中心</div>
+                <div style="font-size: 0.75rem; color: #6c757d;">創盛國際</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 右側主內容 -->
+    <div class="main-wrapper">
+        <header class="top-header">
+            <div style="display: flex; align-items: center;">
+                <div class="mobile-menu-btn" onclick="toggleSidebar()">☰</div>
+                <div class="breadcrumbs">操作手冊 / <span id="breadcrumb-current" class="current-page-title">系統儀表板</span></div>
+            </div>
+            <div style="font-size: 0.9rem; color: #666;">
+                Ver 240201 | 營業人版
+            </div>
+        </header>
+
+        <main class="content-area">
+            
+            <!-- 1. 儀表板 (Dashboard) -->
+            <div id="dashboard" class="page-view active">
+                <div style="margin-bottom: 30px;">
+                    <h1 style="font-size: 1.8rem; margin-bottom: 10px;">歡迎使用 Mr.P 發票作業系統</h1>
+                    <p style="color: #666;">這裡是您的操作導航中心。請選擇您目前遇到的狀況，或透過下方捷徑快速前往教學。</p>
+                </div>
+
+                <h3 style="margin-top: 0;">快速捷徑</h3>
+                <div class="dashboard-grid">
+                    <div class="quick-card" onclick="triggerMenu('daily-issue')">
+                        <div class="qc-icon">🧾</div>
+                        <div class="qc-content">
+                            <h4>我要開立發票</h4>
+                            <p>SA310 銷貨結帳、載具設定、愛心碼操作說明。</p>
+                        </div>
+                    </div>
+                    <div class="quick-card" onclick="triggerMenu('upload-daily')">
+                        <div class="qc-icon">☁️</div>
+                        <div class="qc-content">
+                            <h4>每日發票上傳</h4>
+                            <p>下班前必做！INV02 上傳與簡易除錯。</p>
+                        </div>
+                    </div>
+                    <div class="quick-card" onclick="triggerMenu('daily-void')">
+                        <div class="qc-icon">❌</div>
+                        <div class="qc-content">
+                            <h4>發票印錯了？</h4>
+                            <p>如何作廢重開 (F10) 或是處理卡紙問題。</p>
+                        </div>
+                    </div>
+                    <div class="quick-card" onclick="triggerMenu('return-ops')">
+                        <div class="qc-icon">↩️</div>
+                        <div class="qc-content">
+                            <h4>客戶要退貨</h4>
+                            <p>退換貨流程操作與折讓單自動開立說明。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📆 近期重要提醒</h2>
+                    </div>
+                    <div class="alert-box alert-warning">
+                        <div style="font-size: 1.2rem;">🔔</div>
+                        <div>
+                            <strong>雙月 20 號記得取號！</strong><br>
+                            現在如果是雙月（2, 4, 6...月）的 20 號之後，請記得前往 <a href="#" onclick="triggerMenu('platform-get')">平台取號</a> 並進行 <a href="#" onclick="triggerMenu('system-import')">系統匯入</a>，以免下個月無法開立發票。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 重要須知 -->
+            <div id="important" class="page-view">
+                <div class="card">
+                    <div class="card-header"><h2>重要時程與注意事項</h2></div>
+                    <div class="alert-box alert-warning">
+                        <div>⚠️</div>
+                        <div><strong>請務必牢記以下時間點，以免影響稅務申報！</strong></div>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr style="background: #f8f9fa; border-bottom: 2px solid #eee;">
+                            <th style="text-align: left; padding: 12px;">頻率</th>
+                            <th style="text-align: left; padding: 12px;">作業項目</th>
+                            <th style="text-align: left; padding: 12px;">說明</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;"><strong>每日</strong></td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;">發票上傳 & 核對</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee; color: #666;">請於每日交班或隔日執行 INV02 上傳。</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;"><strong>每單月 10 號前</strong></td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;">空白發票上傳</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee; color: #666;">上傳前一期未使用之空白發票號碼。</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;"><strong>每月 10 號前</strong></td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;">媒體申報檔核對</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee; color: #666;">下載媒體申報檔核對前月份發票資料。</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;"><strong>每雙月 20 號後</strong></td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;">平台取號</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee; color: #666;">至財政部平台領取下期字軌。</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 3. 平台取號 -->
+            <div id="platform-get" class="page-view">
+                <div class="card">
+                    <div class="card-header"><h2>步驟1：財政部平台取號</h2></div>
+                    <p>請於<strong>每雙月 20 號後</strong>（如 2月20日、4月20日...）操作。</p>
+                    
+                    <h3>操作步驟</h3>
+                    <ol class="step-list">
+                        <li>前往 <a href="https://www.einvoice.nat.gov.tw/" target="_blank">財政部電子發票整合服務平台</a>，選擇<strong>營業人</strong>登入。</li>
+                        <li>點選功能選單：<strong>電子發票專用字軌號碼取號</strong> > <strong>電子發票專用字軌號碼取號(營業人)</strong>。</li>
+                    </ol>
+                    
+                    <div class="img-placeholder" data-src="images/01_平台登入.png">
+                        <div class="placeholder-text">
+                            <div>🖼️ 請放入圖片：01_平台登入.png</div>
+                        </div>
+                        <img src="" alt="平台登入畫面">
+                    </div>
+                    <span class="caption">圖：平台登入畫面示意</span>
+
+                    <ol class="step-list" start="3">
+                        <li>選擇要取號的「發票期別」及「發票類別」，輸入「取用本數」後提交取號。</li>
+                        <li>等待通知後，回到同畫面點擊 <strong>查詢</strong>，勾選已配號資料並點擊 <strong>下載</strong>。</li>
+                        <li>將檔案 <span class="code-tag">invnoapply.csv</span> 存檔至電腦。</li>
+                    </ol>
+
+                    <div class="alert-box alert-warning">
+                        <div>❌</div>
+                        <div><strong>千萬不要打開 CSV 檔！</strong><br>請直接下載並儲存檔案即可，若使用 Excel 開啟該檔案，可能會導致格式跑掉而無法匯入系統。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 系統匯入 -->
+            <div id="system-import" class="page-view">
+                <div class="card">
+                    <div class="card-header"><h2>步驟2：系統匯入字軌</h2></div>
+                    <p>取得 CSV 檔後，需將其匯入 Mr.P 系統中。</p>
+
+                    <h3>操作步驟</h3>
+                    <ol class="step-list">
+                        <li>進入 Mr.P 系統，前往 <strong>11000 工作站參數起始設定</strong> > <strong>電子發票</strong> 頁籤。</li>
+                        <li>點選下方的 <strong>空白發票建立</strong> > <strong>電子發票字軌配號匯入</strong>。</li>
+                    </ol>
+
+                    <div class="img-placeholder" data-src="images/03_系統匯入設定.png">
+                        <div class="placeholder-text">
+                            <div>🖼️ 請放入圖片：03_系統匯入設定.png</div>
+                        </div>
+                        <img src="" alt="11000系統匯入">
+                    </div>
+
+                    <ol class="step-list" start="3">
+                        <li>瀏覽選擇剛剛下載的 <span class="code-tag">invnoapply.csv</span> 檔案。</li>
+                        <li>確認畫面顯示的資料無誤後，點選 <strong>確定建立空白發票</strong>。</li>
+                    </ol>
+
+                    <div class="img-placeholder" data-src="images/04_匯入完成.png">
+                        <div class="placeholder-text">
+                            <div>🖼️ 請放入圖片：04_匯入完成.png</div>
+                        </div>
+                        <img src="" alt="匯入完成">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. 銷貨發票開立 -->
+            <div id="daily-issue" class="page-view">
+                <div class="card">
+                    <div class="card-header"><h2>SA310 銷貨發票開立</h2></div>
+                    <p>在 SA310 銷貨結帳時 (F1)，系統支援三種開立方式。</p>
+                    
+                    <div class="img-placeholder" data-src="images/05_結帳畫面.png">
+                        <div class="placeholder-text">
+                            <div>🖼️ 請放入圖片：05_結帳畫面.png</div>
+                        </div>
+                        <img src="" alt="結帳畫面">
+                    </div>
+
+                    <h3>選項說明</h3>
+                    <ul class="step-list">
+                        <li><strong>紙本 (預設)：</strong> 印出電子發票證明聯與明細。</li>
+                        <li><strong>捐贈愛心碼：</strong> 需填入愛心碼 (不印發票，可印明細)。</li>
+                        <li><strong>共通載具：</strong> 手機條碼第一碼必須為 <span class="code-tag">/</span> 且英文須大寫 (例如: /ABCDEFG)。</li>
+                    </ul>
+
+                    <div class="alert-box alert-info">
+                        <div>💡</div>
+                        <div><strong>小撇步：</strong> 若客戶固定使用載具，可於 <strong>SA210 客戶基本資料</strong> 先行設定，結帳時就會自動帶入囉！</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. 作廢與重開 -->
+            <div id="daily-void" class="page-view">
+                <div class="card">
+                    <div class="card-header"><h2>發票作廢與重開 (F10)</h2></div>
+                    <p>適用情境：發票機卡紙未印出、統編輸入錯誤、或交易內容有誤需當場重開。</p>
+
+                    <h3>操作步驟</h3>
+                    <ol class="step-list">
+                        <li>在 SA310 按 <span class="code-tag">F7</span> (上筆) 找到該筆錯誤交易。</li>
+                        <li>點選 <span class="code-tag">F10</span> 重開。</li>
+                        <li><strong>務必選擇「作廢原因」</strong> (例如：紙本未開出)。</li>
+                        <li>按 F2 確定，系統將作廢舊票並開立新票。</li>
+                    </ol>
+
+                    <div class="img-placeholder" data-src="images/07_作廢原因.png">
+                        <div class="placeholder-text">
+                            <div>🖼️ 請放入圖片：07_作廢原因.png</div>
+                        </div>
+                        <img src="" alt="作廢原因">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. 補印作業 -->
+            <div id="daily-reprint" class="page-view">
+                <div class="card">
+                    <div class="card-header"><h2>補印收據與發票</h2></div>
+                    
+                    <h3>情境 A：補印交易明細 (收據)</h3>
+                    <ol class="step-list">
+                        <li>在 SA310 找到該筆交易。</li>
+                        <li>按 <span class="code-tag">Ctrl</span> + <span class="code-tag">H</span> 呼叫功能選單。</li>
+                        <li>點選 <strong>銷貨收據</strong> 即可。</li>
+                    </ol>
+
+                    <hr style="margin: 30px 0; border: 0; border-top: 1px dashed #ddd;">
+
+                    <h3>情境 B：補印發票證明聯</h3>
+                    <div class="alert-box alert-warning">
+                        <div>⚠️</div>
+                        <div><strong>注意：</strong> 僅限於「原正本模糊不清且中獎需領獎」時使用。只能補印一次，且會有「補印」字樣。</div>
+                    </div>
+                    <ol class="step-list">
+                        <li>進入 <strong>INV02 電子發票查詢及上傳作業</strong>。</li>
+                        <li>輸入發票號碼查詢。</li>
+                        <li>選取該筆發票，點選右下角的 <strong>補印證明聯</strong>。</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- 8. 退換貨作業 -->
+            <div id="return-ops" class="page-view">
+                <div class="card">
+                    <div class="card-header"><h2>退換貨作業流程</h2></div>
+                    
+                    <h3>操作步驟</h3>
+                    <ol class="step-list">
+                        <li>SA310 右下角點選 <strong>發票退貨</strong>。</li>
+                        <li>輸入原發票號碼 > 查詢 > <strong>勾選</strong>欲退貨的商品。</li>
+                        <li>若有換購新商品，請直接刷入新商品條碼。</li>
+                        <li>按 <span class="code-tag">F1</span> 結帳。</li>
+                    </ol>
+
+                    <div class="img-placeholder" data-src="images/09_退貨結帳.png">
+                        <div class="placeholder-text">
+                            <div>🖼️ 請放入圖片：09_退貨結帳.png</div>
+                        </div>
+                        <img src="" alt="退貨結帳">
+                    </div>
+
+                    <div class="alert-box alert-info">
+                        <div>ℹ️</div>
+                        <div>
+                            <strong>系統邏輯：</strong><br>
+                            結帳後，系統會自動將<strong>原發票作廢</strong>，並針對剩餘/新購商品開立<strong>新發票</strong>。請記得回收舊的發票證明聯。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. 折讓單作業 -->
+            <div id="allowance-ops" class="page-view">
+                <div class="card">
+                    <div class="card-header"><h2>折讓單開立與補印</h2></div>
+                    <p>當跨期退貨（已申報之發票）時，系統不會作廢發票，而是自動開立<strong>折讓單</strong>。</p>
+
+                    <h3>折讓單處理重點</h3>
+                    <ul class="step-list">
+                        <li>折讓單會印出兩張：<strong>存根聯</strong> (店家留存)、<strong>收執聯</strong> (客戶留存)。</li>
+                        <li>需請客戶填寫買方統編/姓名並<strong>簽名或蓋章</strong>。</li>
+                        <li>存根聯請與原發票訂在一起，交回會計人員。</li>
+                    </ul>
+
+                    <div class="img-placeholder" data-src="images/10_折讓單樣式.png">
+                        <div class="placeholder-text">
+                            <div>🖼️ 請放入圖片：10_折讓單樣式.png</div>
+                        </div>
+                        <img src="" alt="折讓單樣式">
+                    </div>
+
+                    <h3>如何補印折讓單？</h3>
+                    <p>進入 <strong>INV02</strong> > <strong>1. 電子發票查詢</strong> > 憑證區分選擇「折讓單」 > 勾選後點選 <strong>補印折讓單</strong>。</p>
+                </div>
+            </div>
+
+            <!-- 10. 每日上傳 -->
+            <div id="upload-daily" class="page-view">
+                <div class="card">
+                    <div class="card-header"><h2>每日發票上傳 (INV02)</h2></div>
+                    <p>請養成每日或每班交班時上傳的習慣，避免資料累積過多。</p>
+
+                    <h3>操作步驟</h3>
+                    <ol class="step-list">
+                        <li>進入 <strong>INV02 電子發票查詢及上傳作業</strong>。</li>
+                        <li>在「1. 電子發票查詢」頁面，直接點選 <strong>查詢</strong>（預設僅顯示未上傳）。</li>
+                        <li>確認清單無誤後，點選 <strong>匯出</strong> > 選擇 <strong>是</strong>。</li>
+                        <li>當視窗中清空，代表全數上傳成功。</li>
+                    </ol>
+
+                    <div class="img-placeholder" data-src="images/13_每日上傳匯出.png">
+                        <div class="placeholder-text">
+                            <div>🖼️ 請放入圖片：13_每日上傳匯出.png</div>
+                        </div>
+                        <img src="" alt="每日上傳">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 11. 上傳核對 -->
+            <div id="check-data" class="page-view">
+                <div class="card">
+                    <div class="card-header"><h2>上傳發票核對</h2></div>
+                    <p>確保系統內的銷售資料與財政部平台收到的資料一致。</p>
+
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 300px;">
+                            <h3>Step 1: 系統端看張數</h3>
+                            <p><strong>INV02</strong> > <strong>4. 報稅明細查詢</strong> > 查詢昨日發票總張數。</p>
+                            <div class="img-placeholder" data-src="images/14_系統核對.png" style="height: 150px;">
+                                <div class="placeholder-text">圖片：系統核對</div>
+                                <img src="" alt="系統核對">
+                            </div>
+                        </div>
+                        <div style="flex: 1; min-width: 300px;">
+                            <h3>Step 2: 平台端看張數</h3>
+                            <p>登入平台 > 查詢與下載 > 發票查詢 > <strong>銷項</strong> (需將 B2C 與 B2B 張數相加)。</p>
+                            <div class="img-placeholder" data-src="images/15_平台銷項查詢.png" style="height: 150px;">
+                                <div class="placeholder-text">圖片：平台核對</div>
+                                <img src="" alt="平台核對">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 12. 空白發票上傳 -->
+            <div id="upload-blank" class="page-view">
+                <div class="card">
+                    <div class="card-header"><h2>空白發票上傳 (每單月 10 號前)</h2></div>
+                    <p>每期未使用完畢的空白發票號碼，必須上傳至平台。</p>
+
+                    <h3>自動上傳步驟</h3>
+                    <ol class="step-list">
+                        <li>進入 <strong>INV02</strong> > <strong>2. 空白發票查詢</strong>。</li>
+                        <li>輸入起始年月 (如 2023/09) > <strong>查詢</strong>。</li>
+                        <li>點選 <strong>匯出</strong> > <strong>是</strong>。</li>
+                    </ol>
+
+                    <div class="img-placeholder" data-src="images/16_空白發票匯出.png">
+                        <div class="placeholder-text">
+                            <div>🖼️ 請放入圖片：16_空白發票匯出.png</div>
+                        </div>
+                        <img src="" alt="空白發票匯出">
+                    </div>
+
+                    <div class="alert-box alert-warning">
+                        <div>⚠️</div>
+                        <div><strong>例外狀況：</strong> 若發票有分段提供給其他電商使用，請勿使用上述自動匯出，需至財政部平台手動登錄。</div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // 頁面切換邏輯
+        function showPage(pageId, menuItem) {
+            // 1. 隱藏所有頁面
+            document.querySelectorAll('.page-view').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // 2. 移除所有選單激活狀態
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // 3. 顯示目標頁面
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                // 滾動回頂部
+                document.querySelector('.content-area').scrollTop = 0;
+            }
+
+            // 4. 激活當前選單（如果是從選單點擊）
+            if (menuItem) {
+                menuItem.classList.add('active');
+                // 更新麵包屑標題
+                document.getElementById('breadcrumb-current').textContent = menuItem.innerText.trim();
+            }
+
+            // 手機版自動收合側邊欄
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+
+        // 捷徑觸發選單點擊
+        function triggerMenu(targetId) {
+            // 找到對應的 onclick="showPage('targetId', this)" 的元素
+            const menuItems = document.querySelectorAll('.menu-item');
+            for (let item of menuItems) {
+                if (item.getAttribute('onclick').includes(`'${targetId}'`)) {
+                    item.click();
+                    break;
+                }
+            }
+        }
+
+        // 手機版側邊欄開關
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // 圖片加載處理
+        document.addEventListener('DOMContentLoaded', () => {
+            const placeholders = document.querySelectorAll('.img-placeholder');
+            
+            placeholders.forEach(placeholder => {
+                const img = placeholder.querySelector('img');
+                const src = placeholder.getAttribute('data-src');
+                
+                if(src) {
+                    img.src = src;
+                    img.onload = function() {
+                        placeholder.classList.add('has-image');
+                    };
+                    img.onerror = function() {
+                        // 圖片不存在時保持 placeholder 狀態，不破圖
+                        console.log('Image not found:', src);
+                    };
+                }
+            });
+        });
+    </script>
+</body>
+</html>
