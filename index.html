@@ -327,7 +327,7 @@
             <div class="menu-item" data-sys="shared" onclick="showPage('mof-check', this)">
                 <span class="menu-icon">✔️</span> 上傳發票核對 (日/月)
             </div>
-            <!-- 【補漏】財政部平台的空白發票作業 -->
+            <!-- 財政部平台的空白發票作業 -->
             <div class="menu-item" data-sys="shared" onclick="showPage('mof-blank-check', this)">
                 <span class="menu-icon">🏷️</span> 空白發票平台核對
             </div>
@@ -363,6 +363,20 @@
                         本手冊整合了前端發票開立作業，以及後端 INV02 與財政部平台作業。<br>
                         請透過左側選單查閱您需要的操作步驟。
                     </p>
+                </div>
+
+                <!-- 🚀 新增：近期重要提醒卡片 -->
+                <div class="card" style="border-left: 5px solid #f39c12; padding: 20px 30px;">
+                    <h2 style="margin-top:0; color:#d35400; font-size: 1.3rem; display: flex; align-items: center; gap: 8px;">
+                        <span>📆</span> 近期重要提醒
+                    </h2>
+                    <div class="alert-box alert-warning" style="margin-bottom: 0; border: none; background-color: #fffaf0; padding: 10px 15px;">
+                        <div style="font-size: 1.2rem;">🔔</div>
+                        <div>
+                            <strong>雙月 20 號之後，請記得完成「平台取號與系統匯入」！</strong><br>
+                            若目前為雙月（2, 4, 6, 8, 10, 12月）的 20 號之後，請務必至 <a href="#" style="color:#d35400; text-decoration:underline; font-weight:bold;" onclick="showPage('mof-getnum', null)">財政部平台取號</a>，並回系統完成配號匯入，以免影響次期發票開立作業。
+                        </div>
+                    </div>
                 </div>
 
                 <div style="display:flex; gap:20px; flex-wrap:wrap;">
@@ -402,7 +416,7 @@
                         <img src="" alt="11000系統匯入畫面">
                     </div>
 
-                    <!-- 【補漏 1】: IM120 特殊品項與品名規範 -->
+                    <!-- IM120 特殊品項與品名規範 -->
                     <div class="alert-box alert-info">
                         <div>💡</div>
                         <div>
@@ -702,7 +716,7 @@
                 </div>
             </div>
 
-            <!-- 【補漏 2】: 空白發票平台核對與手動上傳 -->
+            <!-- 空白發票平台核對與手動上傳 -->
             <div id="mof-blank-check" class="page-view">
                 <div class="card">
                     <div class="card-header"><h2>空白發票平台核對作業 <span class="sys-tag tag-shared">三系統共通</span></h2></div>
@@ -734,7 +748,7 @@
                     <h3>Q2: 每日核對發現發票張數跟平台對不起來？</h3>
                     <p>請先確認您在財政部平台查詢時，是否有將 <strong>B2C</strong>（一般消費者）與 <strong>B2B</strong>（有統編）的發票張數相加。</p>
 
-                    <!-- 【補漏 3】: 發票紙捲更換提醒 -->
+                    <!-- 發票紙捲更換提醒 -->
                     <h3>Q3: 電子發票機的紙卷用完了怎麼更換？</h3>
                     <p>請將發票機上蓋打開，移除舊紙捲軸心。放入新紙卷時，請確保<strong>熱感應面（能刮出黑線的面）朝上或朝向印字頭</strong>。若安裝反了會印出空白發票，請重裝並利用 <span class="code-tag">F10</span> 作廢重開即可。</p>
 
