@@ -232,7 +232,17 @@
             color: #adb5bd; margin: 20px 0; position: relative; overflow: hidden;
         }
         .img-placeholder img { max-width: 100%; max-height: 100%; object-fit: contain; display: none; }
-        .img-placeholder.has-image img { display: block; }
+        
+        /* 當圖片成功載入時的樣式，加入放大鏡游標與點擊回饋 */
+        .img-placeholder.has-image img { 
+            display: block; 
+            cursor: zoom-in;
+            transition: opacity 0.2s ease;
+        }
+        .img-placeholder.has-image img:hover {
+            opacity: 0.85;
+        }
+        
         .img-placeholder.has-image .placeholder-text { display: none; }
         
         .coming-soon { text-align: center; padding: 60px 20px; color: var(--text-gray); }
@@ -246,6 +256,40 @@
         .tag-mrp { background-color: #e3f2fd; color: #0d6efd; }
         .tag-eos { background-color: #e8f5e9; color: #198754; }
         .tag-shared { background-color: #f8f9fa; color: #6c757d; border: 1px solid #ddd; }
+
+        /* --- Lightbox (圖片放大遮罩) 樣式 --- */
+        .image-lightbox {
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            cursor: zoom-out; /* 提示點擊可縮小 */
+        }
+        .image-lightbox.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .image-lightbox img {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+            background-color: #fff; /* 避免透明背景圖片與黑色遮罩融為一體 */
+        }
+        .image-lightbox.active img {
+            transform: scale(1);
+        }
 
     </style>
 </head>
@@ -365,7 +409,7 @@
                     </p>
                 </div>
 
-                <!-- 🚀 新增：近期重要提醒卡片 -->
+                <!-- 近期重要提醒卡片 -->
                 <div class="card" style="border-left: 5px solid #f39c12; padding: 20px 30px;">
                     <h2 style="margin-top:0; color:#d35400; font-size: 1.3rem; display: flex; align-items: center; gap: 8px;">
                         <span>📆</span> 近期重要提醒
@@ -646,7 +690,7 @@
                         <li>選擇登入身分為 <strong>營業人</strong>，依序輸入統編、帳號、密碼及圖形驗證碼，點選 <strong>登入</strong>。</li>
                     </ol>
                     
-                    <!-- 針對您的寬版流程圖，特別取消固定高度並設定 width: 100% 讓它完美展開 -->
+                    <!-- 針對寬版流程圖，特別取消固定高度並設定 width: 100% 讓它完美展開 -->
                     <div class="img-placeholder" data-src="images/mof_01_平台登入流程.png" style="height: auto; min-height: 200px; padding: 15px;">
                         <div class="placeholder-text"><div>🖼️ 請放入圖片：mof_01_平台登入流程.png</div></div>
                         <img src="" alt="平台登入完整流程圖" style="width: 100%; max-height: none;">
@@ -771,6 +815,11 @@
         </main>
     </div>
 
+    <!-- 圖片放大遮罩 (Lightbox) -->
+    <div class="image-lightbox" id="lightbox" onclick="closeLightbox()">
+        <img src="" alt="Enlarged Image" id="lightbox-img">
+    </div>
+
     <script>
         const HARDCODED_SYSTEM = ''; 
 
@@ -796,6 +845,7 @@
 
             switchSystem(targetSys, isLocked);
 
+            // 圖片載入與綁定放大鏡功能
             const placeholders = document.querySelectorAll('.img-placeholder');
             placeholders.forEach(placeholder => {
                 const img = placeholder.querySelector('img');
@@ -805,6 +855,10 @@
                     img.src = src;
                     img.onload = function() {
                         placeholder.classList.add('has-image');
+                        // 綁定點擊放大事件
+                        img.onclick = function() {
+                            openLightbox(img.src);
+                        };
                     };
                     img.onerror = function() {
                         console.log('Image not found:', src);
@@ -812,6 +866,19 @@
                 }
             });
         });
+
+        // 打開圖片放大遮罩
+        function openLightbox(src) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightboxImg.src = src;
+            lightbox.classList.add('active');
+        }
+
+        // 關閉圖片放大遮罩
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
 
         function switchSystem(sysCode, isLocked = false) {
             const menuTitle = document.getElementById('menu-title-specific');
